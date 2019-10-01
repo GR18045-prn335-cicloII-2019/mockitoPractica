@@ -26,10 +26,11 @@ import ues.occ.edu.sv.ingenieria.prn335.cineData.entity.Clasificacion;
  */
 @ExtendWith(MockitoExtension.class)
 public class UtilidadesFacadeTest {
+
     //todas las entidades
     EntityTransaction mockTr = Mockito.mock(EntityTransaction.class);
     EntityManager mockEm = Mockito.mock(EntityManager.class);
-    EntityManagerFactory mockEmf = Mockito.mock(EntityManagerFactory.class);
+    final static EntityManagerFactory mockEmf = Mockito.mock(EntityManagerFactory.class);
     UtilidadesFacade cut = new UtilidadesFacade();
     Clasificacion mockr = Mockito.mock(Clasificacion.class);
     List<Clasificacion> lista = Mockito.mock(ArrayList.class);
@@ -69,7 +70,8 @@ public class UtilidadesFacadeTest {
 
         //ahora todo bien
         cut.em = mockEm;
-        Mockito.when(mockEm.getTransaction()).thenReturn(mockTr);
+        //Mockito.when(mockEm.getTransaction()).thenReturn(mockTr);
+        Mockito.when(cut.getTX()).thenReturn(mockTr);
         cut.crear(mockr);
         //devuelve error de un metodo void 
         try {
@@ -84,7 +86,7 @@ public class UtilidadesFacadeTest {
      */
     @Test
     public void testModificar() throws PersistenceException {
-       //ahora todo bien
+        //ahora todo bien
         cut.em = mockEm;
         Mockito.when(mockEm.getTransaction()).thenReturn(mockTr);
         cut.modificar(mockr);
