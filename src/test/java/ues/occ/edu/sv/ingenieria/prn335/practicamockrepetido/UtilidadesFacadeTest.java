@@ -11,6 +11,7 @@ import javax.ejb.embeddable.EJBContainer;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,7 +32,7 @@ public class UtilidadesFacadeTest {
     EntityManagerFactory mockEmf = Mockito.mock(EntityManagerFactory.class);
     UtilidadesFacade cut = new UtilidadesFacade();
     Clasificacion mockr = Mockito.mock(Clasificacion.class);
-    List<Clasificacion> lista = new ArrayList<Clasificacion>();
+    List<Clasificacion> lista = Mockito.mock(ArrayList.class);
 
     public UtilidadesFacadeTest() {
 
@@ -65,28 +66,35 @@ public class UtilidadesFacadeTest {
      * Test of crear method, of class UtilidadesFacade.
      */
     @Test
-    public void testCrear() throws Exception {
+    public void testCrear() throws PersistenceException {
 
         //ahora todo bien
         cut.em = mockEm;
         Mockito.when(mockEm.getTransaction()).thenReturn(mockTr);
         cut.crear(mockr);
-        try {
-            cut.em = null;
-            cut.crear(mockr);
-        } catch (Exception e) {
-        }
+        //error
+//        try {
+//            //Mockito.when(mockTr.commit()).thenThrow(PersistenceException.class);
+//           // cut.crear(mockr);
+//        } catch (PersistenceException e) {
+//            System.out.println(e);
+//        }
     }
 
     /**
      * Test of modificar method, of class UtilidadesFacade.
      */
     @Test
-    public void testModificar() throws Exception {
+    public void testModificar() throws PersistenceException {
         //ahora todo bien
         cut.em = mockEm;
         Mockito.when(mockEm.getTransaction()).thenReturn(mockTr);
         cut.modificar(mockr);
+//        try {
+//            cut.modificar(null);
+//
+//        } catch (PersistenceException e) {
+//        }
 
     }
 
@@ -95,12 +103,11 @@ public class UtilidadesFacadeTest {
      */
     @Test
     public void testEliminar() throws Exception {
-        try {
+        
             cut.em = mockEm;
             Mockito.when(mockEm.getTransaction()).thenReturn(mockTr);
             cut.eliminar(mockr);
-        } catch (Exception e) {
-        }
+        
 
     }
 
@@ -109,16 +116,24 @@ public class UtilidadesFacadeTest {
      */
     @Test
     public void testGetClasificacion() throws Exception {
-
+        cut.em = mockEm;
+        List<Clasificacion> lista = new ArrayList<Clasificacion>();
+        Query mockQ = Mockito.mock(Query.class);
+        Mockito.when(mockEm.createQuery(Mockito.anyString())).thenReturn(mockQ);
+        Mockito.when(mockQ.getResultList()).thenReturn(lista);
+        //todo va bien
         try {
-            cut.em = mockEm;
-            List<Clasificacion> lista = new ArrayList<Clasificacion>();
-            Query mockQ = Mockito.mock(Query.class);
-            Mockito.when(mockEm.createQuery(Mockito.anyString())).thenReturn(mockQ);
-            Mockito.when(mockQ.getResultList()).thenReturn(lista);
+
             List<Clasificacion> resultado = cut.getClasificacion();
         } catch (Exception e) {
 
+            //devuelve la query null para que genere la ecepcion
+        }
+        try {
+
+            Mockito.when(mockEm.createQuery(Mockito.anyString())).thenReturn(null);
+            List<Clasificacion> resultado = cut.getClasificacion();
+        } catch (Exception e) {
         }
     }
 
@@ -128,8 +143,32 @@ public class UtilidadesFacadeTest {
     @Test
     public void testHandler() throws Exception {
 
-        cut.handler();
-
+        //mock todo el metodo get lista
+        Clasificacion clasi = Mockito.mock(Clasificacion.class);
+        Query mockQ = Mockito.mock(Query.class);
+        Mockito.when(mockEm.createQuery(Mockito.anyString())).thenReturn(mockQ);
+        Mockito.when(mockQ.getResultList()).thenReturn(lista);
+        //mock get id clasificacion
+        Mockito.when(lista.get(Mockito.anyInt())).thenReturn(clasi);
+        Mockito.when(clasi.getIdClasificacion()).thenReturn(10);
+        //que devuelva tamaño mayor a 0
+        Mockito.when(lista.size()).thenReturn(10);
+        try {
+            cut.handler();
+        } catch (Exception e) {
+        }
+        //que devuelva un id=0
+        try {
+            Mockito.when(clasi.getIdClasificacion()).thenReturn(0);
+            cut.handler();
+        } catch (Exception e) {
+        }
+        //que devuelva tamaño igual a 0
+        try {
+            Mockito.when(lista.size()).thenReturn(-1);
+            cut.handler();
+        } catch (Exception e) {
+        }
     }
 
 }
