@@ -26,7 +26,7 @@ import ues.occ.edu.sv.ingenieria.prn335.cineData.entity.Clasificacion;
  */
 @ExtendWith(MockitoExtension.class)
 public class UtilidadesFacadeTest {
-
+    //todas las entidades
     EntityTransaction mockTr = Mockito.mock(EntityTransaction.class);
     EntityManager mockEm = Mockito.mock(EntityManager.class);
     EntityManagerFactory mockEmf = Mockito.mock(EntityManagerFactory.class);
@@ -35,7 +35,6 @@ public class UtilidadesFacadeTest {
     List<Clasificacion> lista = Mockito.mock(ArrayList.class);
 
     public UtilidadesFacadeTest() {
-
     }
 
     /**
@@ -72,13 +71,12 @@ public class UtilidadesFacadeTest {
         cut.em = mockEm;
         Mockito.when(mockEm.getTransaction()).thenReturn(mockTr);
         cut.crear(mockr);
-        //error
-//        try {
-//            //Mockito.when(mockTr.commit()).thenThrow(PersistenceException.class);
-//           // cut.crear(mockr);
-//        } catch (PersistenceException e) {
-//            System.out.println(e);
-//        }
+        //devuelve error de un metodo void 
+        try {
+            Mockito.doThrow(PersistenceException.class).when(mockEm).persist(Mockito.any(Clasificacion.class));
+            cut.crear(mockr);
+        } catch (PersistenceException e) {
+        }
     }
 
     /**
@@ -86,29 +84,34 @@ public class UtilidadesFacadeTest {
      */
     @Test
     public void testModificar() throws PersistenceException {
-        //ahora todo bien
+       //ahora todo bien
         cut.em = mockEm;
         Mockito.when(mockEm.getTransaction()).thenReturn(mockTr);
         cut.modificar(mockr);
-//        try {
-//            cut.modificar(null);
-//
-//        } catch (PersistenceException e) {
-//        }
-
+        //devuelve error de un metodo void 
+        try {
+            Mockito.doThrow(PersistenceException.class).when(mockEm).merge(Mockito.any(Clasificacion.class));
+            cut.modificar(mockr);
+        } catch (PersistenceException e) {
+        }
     }
 
     /**
      * Test of eliminar method, of class UtilidadesFacade.
      */
     @Test
-    public void testEliminar() throws Exception {
-        
-            cut.em = mockEm;
-            Mockito.when(mockEm.getTransaction()).thenReturn(mockTr);
-            cut.eliminar(mockr);
-        
+    public void testEliminar() throws PersistenceException {
 
+        //ahora todo bien
+        cut.em = mockEm;
+        Mockito.when(mockEm.getTransaction()).thenReturn(mockTr);
+        cut.eliminar(mockr);
+        //devuelve error de un metodo void 
+        try {
+            Mockito.doThrow(PersistenceException.class).when(mockEm).remove(Mockito.any(Clasificacion.class));
+            cut.eliminar(mockr);
+        } catch (PersistenceException e) {
+        }
     }
 
     /**
